@@ -1,8 +1,12 @@
+import os
 from torchviz import make_dot
 from torch import nn
-from trainer.utils import ModelConfig
+from trainer.utils import config, ModelConfig
 import torch
 from torchsummary import summary
+from logger import setup_logger
+
+logger = setup_logger(__name__)
 
 
 class ResidualBlock(nn.Module):
@@ -59,11 +63,14 @@ class AlphaZero(nn.Module):
 mse_loss = nn.MSELoss()
 cce_loss = nn.CrossEntropyLoss()
 
-def build_model():
-    config = ModelConfig(filters=256, resid_blocks=19, input_shape=(119, 8, 8), output_shape=(4672, 1))
+def build_model(path: str):
+    
     model = AlphaZero(config)
-    loss_fn = total_loss_func
-    return model, loss_fn, config
+
+    if os.path.exists(path):
+        model.load_state_dict(torch.load(path))
+    
+    return model, total_loss_func
 
 # TODO: Loss function check
 def total_loss_func(predicted_policy, target_policy, predicted_value, target_value):
@@ -72,11 +79,17 @@ def total_loss_func(predicted_policy, target_policy, predicted_value, target_val
     return (mse + cce) * 0.5
     
 
+path = "../../alphazero_model.pth"
+
 if __name__ == "__main__":
-    model, _, config = build_model()
+    model, _ = build_model(path)
     input = torch.randn(1, *config.input_shape)
     output = model(input)
     dot = make_dot(output, params = dict(model.named_parameters()))
     dot.format = "png"
     dot.render("model_architecture")
+    
     summary(model, input_size=config.input_shape)
+
+    if not os.path.exists(path): 
+        torch.save(model.state_dict(), path)
