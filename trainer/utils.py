@@ -56,3 +56,13 @@ PROMOTION_MAP = {
     2: "r"
 }
 
+class TrainingConfig:
+    def __init__(
+        self,
+        learning_rate: float,
+        batch_size: int,
+        num_epochs: int,
+    ):
+        self.learning_rate = learning_rate
+        self.batch_size = batch_size
+        self.num_epochs = num_epochs

@@ -63,17 +63,21 @@ class AlphaZero(nn.Module):
 mse_loss = nn.MSELoss()
 cce_loss = nn.CrossEntropyLoss()
 
-def build_model(path: str):
+def build_alphazero_model(path: str):
     
     model = AlphaZero(config)
 
     if os.path.exists(path):
         model.load_state_dict(torch.load(path))
+        
+    else:
+        input = torch.randn(1, *config.input_shape)
+        _ = model(input)
     
     return model, total_loss_func
 
 # TODO: Loss function check
-def total_loss_func(predicted_policy, target_policy, predicted_value, target_value):
+def total_loss_func(predicted_policy: torch.Tensor, target_policy: torch.Tensor, predicted_value: torch.Tensor, target_value: torch.Tensor):
     mse = mse_loss(predicted_value, target_value)
     cce = cce_loss(predicted_policy, target_policy)
     return (mse + cce) * 0.5
@@ -82,7 +86,7 @@ def total_loss_func(predicted_policy, target_policy, predicted_value, target_val
 path = "../../alphazero_model.pth"
 
 if __name__ == "__main__":
-    model, _ = build_model(path)
+    model, _ = build_alphazero_model(path)
     input = torch.randn(1, *config.input_shape)
     output = model(input)
     dot = make_dot(output, params = dict(model.named_parameters()))

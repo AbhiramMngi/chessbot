@@ -5,8 +5,7 @@ __pycache__/
 # C extensions
 *.so
 
-
-
+*.pth
 *.h5
 
 # Distribution / packaging
@@ -58,3 +57,5 @@ docs/_build/
 *.pth
 *.h5
 .gitignore
+model_architecture
+games_dataset.pgn
