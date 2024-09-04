@@ -5,6 +5,9 @@ from trainer.utils import config, ModelConfig
 import torch
 from torchsummary import summary
 from logger import setup_logger
+from typing import Callable
+from trainer.utils import config
+
 
 logger = setup_logger(__name__)
 
@@ -63,36 +66,36 @@ class AlphaZero(nn.Module):
 mse_loss = nn.MSELoss()
 cce_loss = nn.CrossEntropyLoss()
 
-def build_alphazero_model(path: str):
+def total_loss_func(predicted_policy: torch.Tensor, target_policy: torch.Tensor, predicted_value: torch.Tensor, target_value: torch.Tensor):
+    mse = mse_loss(predicted_value, target_value)
+    cce = cce_loss(predicted_policy, target_policy)
+    return (mse + cce) * 0.5
+
+path = "alphazero_model.pth"
+model = None
+
+def get_alphazero_model() -> tuple[nn.Module, Callable, Callable]:
+    global model
+    
+    if model is not None:
+        return model, total_loss_func, lambda: torch.save(model.state_dict(), path)
     
     model = AlphaZero(config)
 
     if os.path.exists(path):
         model.load_state_dict(torch.load(path))
-        
+
     else:
         input = torch.randn(1, *config.input_shape)
         _ = model(input)
     
-    return model, total_loss_func
+    return model, total_loss_func, lambda: torch.save(model.state_dict(), path)
 
-# TODO: Loss function check
-def total_loss_func(predicted_policy: torch.Tensor, target_policy: torch.Tensor, predicted_value: torch.Tensor, target_value: torch.Tensor):
-    mse = mse_loss(predicted_value, target_value)
-    cce = cce_loss(predicted_policy, target_policy)
-    return (mse + cce) * 0.5
-    
-
-path = "../../alphazero_model.pth"
 
 if __name__ == "__main__":
-    model, _ = build_alphazero_model(path)
+    model, _, _ = get_alphazero_model()
     input = torch.randn(1, *config.input_shape)
     output = model(input)
-    dot = make_dot(output, params = dict(model.named_parameters()))
-    dot.format = "png"
-    dot.render("model_architecture")
-    
     summary(model, input_size=config.input_shape)
 
     if not os.path.exists(path): 

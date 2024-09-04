@@ -35,7 +35,7 @@ class AlphaZeroOutputProcessor(OutputProcessor):
         
         promotion_piece = move.promotion
         from_square, to_square = move.from_square, move.to_square
-        logger.info(f"from_square: {from_square} to {to_square} promotion piece: {promotion_piece}")
+        # logger.info(f"from_square: {from_square} to {to_square} promotion piece: {promotion_piece}")
         
         if self._is_queenlike_move(from_square, to_square) and (not self._is_under_promotion(promotion_piece)): # QueenLike Move
 
@@ -73,14 +73,14 @@ class AlphaZeroOutputProcessor(OutputProcessor):
             direction = to_square - from_square - 8 # -1, 0, 1
             promotion_piece -= 2
             from_square_idx = underpromotion_move_indices[0] + from_square * 9
-            logger.info(f"promotion piece: {PROMOTION_MAP[promotion_piece]}")
+            # logger.info(f"promotion piece: {PROMOTION_MAP[promotion_piece]}")
             return from_square_idx + promotion_piece * 3 + direction
 
         else: # Knight Move
 
             from_square_idx = knight_move_indices[0] + from_square * 8
             diff = to_square - from_square
-            logger.info(f"From square: {from_square} to_square: {to_square} diff: {diff}")
+            # logger.info(f"From square: {from_square} to_square: {to_square} diff: {diff}")
 
             if diff == -10: # LLEFT_SDOWN
                 return from_square_idx

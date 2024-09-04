@@ -31,9 +31,9 @@ class AlphaZeroInputProcessor(InputProcessor):
         if board.ep_square is not None:
             en_passant[0, board.ep_square // 8, board.ep_square % 8] = 1
         
-        counter = torch.ones((1, *config.input_shape[1:])) * board.can_claim_draw()
-
-        return torch.cat([turn, castling_rights, en_passant, counter, positions], axis=0)
+        input = torch.zeros((1, *config.input_shape))
+        input[0] = torch.cat([turn, castling_rights, en_passant, positions], axis=0)
+        return input
 
     
     def _get_past_positions(self, board: chess.Board) -> Tensor:

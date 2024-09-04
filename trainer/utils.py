@@ -8,9 +8,9 @@ class ModelConfig:
         self.output_shape = output_shape
 
 
-config = ModelConfig(filters=256, resid_blocks=19, input_shape=(119, 8, 8), output_shape=(4672, 1))
+config = ModelConfig(filters=256, resid_blocks=5, input_shape=(20, 8, 8), output_shape=(4672, 1))
 
-n_past_moves = 8
+n_past_moves = 1 # no of past moves to include in the network input 1 or 8
 
 n_possible_outputs = 73
 n = 8
@@ -66,3 +66,15 @@ class TrainingConfig:
         self.learning_rate = learning_rate
         self.batch_size = batch_size
         self.num_epochs = num_epochs
+
+default_training_config = TrainingConfig(
+    learning_rate=1e-4,
+    batch_size=64,
+    num_epochs=1,
+)
+
+c = 1.4 # exploration factor 
+
+mcts_depth_limit = 200 # mcts search depth limit
+
+n_simulations = 100 # number of simulations
