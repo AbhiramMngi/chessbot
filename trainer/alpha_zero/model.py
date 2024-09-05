@@ -1,5 +1,4 @@
 import os
-from torchviz import make_dot
 from torch import nn
 from trainer.utils import config, ModelConfig
 import torch
