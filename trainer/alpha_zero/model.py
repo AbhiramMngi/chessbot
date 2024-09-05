@@ -83,7 +83,7 @@ def get_alphazero_model() -> tuple[nn.Module, Callable, Callable]:
     model = AlphaZero(config)
 
     if os.path.exists(path):
-        model.load_state_dict(torch.load(path))
+        model.load_state_dict(torch.load(path, weights_only=True))
 
     else:
         input = torch.randn(1, *config.input_shape)

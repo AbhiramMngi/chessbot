@@ -18,7 +18,7 @@ class AlphaZeroOutputProcessor(OutputProcessor):
         move_final = ["", 0]
 
         for move in legal_moves:
-            move_prob = list_of_moves[self._get_output_index_from_move(move)]
+            move_prob = list_of_moves[self.get_output_index_from_move(move)]
             if move_final[1] < move_prob:
                 move_final = [move, move_prob]
         return move_final[0]
@@ -31,7 +31,7 @@ class AlphaZeroOutputProcessor(OutputProcessor):
         diff = abs(from_square - to_square)
         return diff % 7 == 0 or diff % 9 == 0 or diff % 8 == 0 or ((from_square // 8) == (to_square // 8))
 
-    def _get_output_index_from_move(self, move: chess.Move) -> torch.Tensor:
+    def get_output_index_from_move(self, move: chess.Move) -> torch.Tensor:
         
         promotion_piece = move.promotion
         from_square, to_square = move.from_square, move.to_square
@@ -101,7 +101,7 @@ class AlphaZeroOutputProcessor(OutputProcessor):
 
     def get_output_tensor_from_move(self, move: chess.Move) -> torch.Tensor:
         arr = torch.zeros(config.output_shape)
-        arr[self._get_output_index_from_move(move)] = 1
+        arr[self.get_output_index_from_move(move)] = 1
         return arr
     
 if __name__ == "__main__":

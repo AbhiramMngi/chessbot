@@ -62,19 +62,24 @@ class TrainingConfig:
         learning_rate: float,
         batch_size: int,
         num_epochs: int,
+        save_interval: int = 1  # save model every save_interval epochs, default is 1 epoch (every epoch)
     ):
         self.learning_rate = learning_rate
         self.batch_size = batch_size
         self.num_epochs = num_epochs
+        self.save_interval = save_interval
 
 default_training_config = TrainingConfig(
     learning_rate=1e-4,
     batch_size=64,
     num_epochs=1,
+    save_interval=1
 )
 
 c = 1.4 # exploration factor 
 
 mcts_depth_limit = 200 # mcts search depth limit
 
-n_simulations = 100 # number of simulations
+n_simulations = 10 # number of simulations
+
+file_path = "lichess-evals.csv"

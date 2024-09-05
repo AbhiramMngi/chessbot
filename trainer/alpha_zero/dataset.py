@@ -1,35 +1,33 @@
-import torch 
 from torch.utils.data import Dataset
-import chess.pgn
-from trainer.input_processor import InputProcessor
-from trainer.output_processor import OutputProcessor
-
-
-# TODO: Complete the dataset implementation after MCTS
+import chess
+import torch
+import pandas as pd
+from trainer.utils import file_path
+from opponent_engine.engine import get_best_move, close
+from trainer.alpha_zero.input_processor import AlphaZeroInputProcessor
+from trainer.alpha_zero.output_processor import AlphaZeroOutputProcessor
 class AlphaZeroDataset(Dataset):
     def __init__(
-        self,
-        file_path: str
+        self
     ):
         super().__init__()
-        self.games = []
-
-        with open(file_path, 'r') as file:
-            while True:
-                game = self.games.append(chess.pgn.read_game(file))
-                if not game:
-                    break
-                self.games.append(game)
+        self.data = pd.read_csv(file_path, index_col="Unnamed: 0")
+        self.op = AlphaZeroOutputProcessor()
+        self.ip = AlphaZeroInputProcessor()
 
     def __len__(self):
-        return len(self.games)
+        return self.data.shape[0]
 
     def __getitem__(self, idx):
-        game = self.games[idx]
-        board = game.board()
-        move = game.fullmove_number
-        input_processor = InputProcessor()
-        output_processor = OutputProcessor()
-        input = input_processor.position_to_input(board)
-        output = output_processor.get_output_tensor_from_move(move)
-        return input, output
+        fen, eval = self.data.iloc[idx]
+    
+        board = chess.Board(fen)
+        inputs = self.ip.position_to_input(board)
+        outputs = [self.op.get_output_index_from_move(get_best_move(fen))]
+        outputs.append(eval)
+
+        return inputs[0], outputs
+
+
+dataset = AlphaZeroDataset() # Output: (inputs, outputs)
+# close()

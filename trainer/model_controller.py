@@ -2,19 +2,21 @@ import torch
 import chess
 from torch import nn
 from typing import Callable
-from trainer.input_processor import InputProcessor
-from trainer.output_processor import OutputProcessor
-from trainer.utils import config, TrainingConfig
+from trainer.alpha_zero.input_processor import AlphaZeroInputProcessor
+from trainer.alpha_zero.output_processor import AlphaZeroOutputProcessor
+from trainer.utils import config, TrainingConfig, default_training_config
 from trainer.model_instances import alphazero_model, az_loss_fn, az_model_save
 from logger import setup_logger
+from trainer.alpha_zero.dataset import AlphaZeroDataset
+from torch.utils.data import DataLoader
 
 logger = setup_logger(__name__)
 class ModelController(object):
     def __init__(
         self, 
         model_type: str,
-        input_processor: InputProcessor, 
-        output_processor: OutputProcessor,
+        input_processor: AlphaZeroInputProcessor, 
+        output_processor: AlphaZeroOutputProcessor,
         training_config: TrainingConfig,  
     ):
         self.model_type = model_type
@@ -46,13 +48,37 @@ class ModelController(object):
         else:
             raise ValueError(f"Invalid model type: {self.model_type}")
     
-    def train(self, dataset: list[tuple[chess.Board, chess.Move]]):
-        pass
+    def train(self):
 
+        train_dataset = AlphaZeroDataset()
+        train_loader = DataLoader(train_dataset, batch_size=self.training_config.batch_size)
 
-    def test(self, dataset: list[tuple[chess.Board, chess.Move]]):
-        pass
+        optimizer = torch.optim.Adam(self.model.parameters(), lr=self.training_config.learning_rate)
+
+        for epoch in range(self.training_config.num_epochs):
+            for batch_idx, (inputs, outputs) in enumerate(train_loader):
+                optimizer.zero_grad()
+                outputs_pred = self.model(inputs)
+                loss = self.loss(outputs_pred[0], outputs[0], outputs_pred[1], outputs[1])
+                loss.backward()
+                optimizer.step()
+
+            if epoch % self.training_config.save_interval == 0:
+                self.save()
+                logger.info(f"Epoch {epoch + 1} - Loss: {loss.item()}")
     
+
+
+if __name__ == "__main__":
+    model_controller = ModelController(
+        model_type="AlphaZero",
+        input_processor=AlphaZeroInputProcessor(),
+        output_processor=AlphaZeroOutputProcessor(),
+        training_config=default_training_config,
+    )
+
+    model_controller.train()
+
     
 
         
