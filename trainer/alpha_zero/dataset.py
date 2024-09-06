@@ -6,6 +6,7 @@ from trainer.utils import file_path
 from opponent_engine.engine import get_best_move, close
 from trainer.alpha_zero.input_processor import AlphaZeroInputProcessor
 from trainer.alpha_zero.output_processor import AlphaZeroOutputProcessor
+
 class AlphaZeroDataset(Dataset):
     def __init__(
         self
@@ -23,11 +24,7 @@ class AlphaZeroDataset(Dataset):
     
         board = chess.Board(fen)
         inputs = self.ip.position_to_input(board)
-        outputs = [self.op.get_output_index_from_move(get_best_move(fen))]
-        outputs.append(eval)
+        outputs = [self.op.get_output_tensor_from_move(get_best_move(fen))]
+        outputs.append(torch.Tensor([eval]).squeeze())
 
         return inputs[0], outputs
-
-
-dataset = AlphaZeroDataset() # Output: (inputs, outputs)
-# close()

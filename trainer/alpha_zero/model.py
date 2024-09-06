@@ -66,9 +66,13 @@ mse_loss = nn.MSELoss()
 cce_loss = nn.CrossEntropyLoss()
 
 def total_loss_func(predicted_policy: torch.Tensor, target_policy: torch.Tensor, predicted_value: torch.Tensor, target_value: torch.Tensor):
+    predicted_policy = predicted_policy.squeeze()
+    target_policy = target_policy.squeeze()
+    predicted_value = predicted_value.squeeze()
+    target_value = target_value.squeeze()
     mse = mse_loss(predicted_value, target_value)
     cce = cce_loss(predicted_policy, target_policy)
-    return (mse + cce) * 0.5
+    return torch.mul(0.5, torch.add(mse, cce))
 
 path = "alphazero_model.pth"
 model = None

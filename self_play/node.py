@@ -14,9 +14,7 @@ class Node(object):
         self.Q = 0
         self.parent = parent
         
-    
-    def serialize(self):
-        pass # TODO
+
 
     def position_score(self):
         if self.parent is None: return 0.5

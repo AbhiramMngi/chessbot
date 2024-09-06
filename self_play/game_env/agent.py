@@ -2,8 +2,8 @@ from trainer.model_controller import ModelController
 from trainer.alpha_zero.input_processor import AlphaZeroInputProcessor
 from trainer.alpha_zero.output_processor import AlphaZeroOutputProcessor
 from trainer.utils import default_training_config, n_simulations
-import chess
 from self_play.MCTS import MCTS
+
 class Agent(object):
     def __init__(self):
         self.model_controller = ModelController(
@@ -17,10 +17,6 @@ class Agent(object):
     
     def run_simulations(self):
         self.mcts.run_simulations(n_simulations=n_simulations)
-
-    
-
-
 
 agent = Agent()
 

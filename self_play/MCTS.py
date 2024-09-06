@@ -5,7 +5,7 @@ import numpy as np
 import chess
 from typing import Callable
 import random
-from opponent_engine.engine import get_best_move
+# from opponent_engine.engine import get_best_move
 from opponent_engine.engine import close as close_engine
 from trainer.utils import mcts_depth_limit
 from chess.pgn import Game, FileExporter
