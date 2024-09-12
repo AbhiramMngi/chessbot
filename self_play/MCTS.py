@@ -29,6 +29,7 @@ class MCTS:
         self.node_count = 1
         self.mode = mode
         self.move_stack = []
+        self.df = {"fen": [], "eval": []}
 
     def run_simulations(self, n_simulations):
         try:
@@ -44,6 +45,9 @@ class MCTS:
                 self.plot_tree()
         finally:
             close_engine()
+            self.save_tree(self.root)
+            import pandas as pd
+            pd.DataFrame(self.df).to_csv(f"{datetime.datetime.now()}.csv")
 
     def select_leaf(self, root: Node) -> Node:
 
@@ -135,6 +139,15 @@ class MCTS:
         nx.draw(G, pos, with_labels=True, node_color="lightblue",arrows=True)
         
         plt.show()
+    
+    def save_tree(self, root: Node) -> None:
+        if root is None:
+            return 
+        self.df["fen"].append(root.state)
+        self.df["eval"].append(root.Q)
+        for child in root.children:
+            self.save_tree(child)
+        
 
 
         
