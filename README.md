@@ -41,9 +41,18 @@ Estimated Total Size (MB): 298.22
 
 The model replicates the design of the Alpha Zero model by google. See [Paper](https://arxiv.org/pdf/1712.01815).
 
+The model outputs 2 heads, 
+
+* **Value** - The evaluation of the given position. Uses the **Mean Squared Error** Loss.
+* **Next Move** - A softmax vector containing all the moves with the highest probable move being the best move in the position. Uses the **Categorical cross-entropy** Loss.
+
+The losses are added in equal ratios to get the final Loss function.
+
+
 The system also uses Monte Carlo Tree Search (MCTS), which is used to generate training data for the neural network by self play, change the [n_simulations]() parameter in the trainer/utils.py file to change the number of games played in self play.
 
 Due to lack of compute, MCTS is only able to generate a few thousand positions for training, to increase the model's effectiveness, the model is pretrained on previous positions with evaluations given by lc0 from Lichess Evaluations Database.
+
 
 
 ## How to Use
