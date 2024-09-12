@@ -1,6 +1,6 @@
 # Chess Bot
 
-A chess engine based on the Alphazero paper.
+A chess engine based on the [Alphazero Paper](https://arxiv.org/pdf/1712.01815).
 
 ## Description
 
