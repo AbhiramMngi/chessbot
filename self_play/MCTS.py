@@ -31,16 +31,19 @@ class MCTS:
         self.move_stack = []
 
     def run_simulations(self, n_simulations):
-        for i in tqdm.tqdm(range(n_simulations)):
-            self.board = chess.Board()
-            leaf = self.select_leaf(self.root)
-            value = self.expand_node(leaf)
-            self.backpropagation(value)
+        try:
+            for i in tqdm.tqdm(range(n_simulations)):
+                self.board = chess.Board()
+                leaf = self.select_leaf(self.root)
+                value = self.expand_node(leaf)
+                self.backpropagation(value)
 
-        close_engine()
-        logger.info(f"total nodes: {self.node_count}")
-        if n_simulations < 2: 
-            self.plot_tree()
+            
+            logger.info(f"total nodes: {self.node_count}")
+            if n_simulations < 2: 
+                self.plot_tree()
+        finally:
+            close_engine()
 
     def select_leaf(self, root: Node) -> Node:
 

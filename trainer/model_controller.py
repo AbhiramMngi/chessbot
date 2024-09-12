@@ -26,12 +26,14 @@ class ModelController(object):
         self.ip = input_processor
         self.op = output_processor
         self.model, self.loss, self.save = self.model_init()
-        device = torch.device('cuda' if torch.cuda.is_available() else 'cpu')
+        self.device = torch.device('cuda' if torch.cuda.is_available() else 'cpu')
         self.model = self.model.to(self.device)
         self.training_config = training_config
     
     def pipeline(self, input_pos: chess.Board) -> tuple[chess.Move, torch.Tensor]:
+
         input = self.ip.position_to_input(input_pos)
+        input = input.to(self.device)
         # logger.info(f"Input sending of shape: {input.shape}")
         output = self.model(input)
         return self.op.output_to_position(output[0], input_pos), output[1]
